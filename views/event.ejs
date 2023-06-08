@@ -1,0 +1,171 @@
+<div class="container mt-4 mb-5">
+     <div class="row justify-content-center mx-2 mx-lg-0">
+       <div class="col-12 col-lg-8">
+         <div class="form-group mb-3">
+           <label for="appendBox" class="form-label">How many rolls to random?</label>
+           <input type="number" name="appendBox" id="appendBox" class="form-control">
+         </div>
+   
+         <div id="formContainer"></div>
+         <div id="box">
+           <div class="row mx-auto mb-3">
+             <div class="col-12 col-lg-6 form-group">
+               <label for="DC" class="form-label">Dark Crystal</label>
+               <input type="number" name="dark_crystal" id="DC" class="form-control">
+             </div>
+             <div class="col-12 col-lg-6 form-group mt-3 mt-lg-0">
+               <label for="TN" class="form-label">Tanium</label>
+               <input type="number" name="tanium" id="TN" class="form-control">
+             </div>
+           </div>
+           <div class="row mb-3">
+             <div class="col-lg-8">
+               <button class="btn-calculate float-start w-100" id="btn-calculate" onclick="CalculateSum()">Calculate</button>
+             </div>
+             <div class="col-lg-4 mt-3 mt-lg-0">
+               <button class="btn-clear float-end w-100" id="btn-clear">Clear <i class="fas fa-arrow-rotate-right"></i></button>
+             </div>
+           </div>
+         </div>
+       </div>
+     </div>
+   </div>
+   
+   <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+   <script>
+   const appendRoll = document.getElementById('appendBox');
+   const formContainer = document.getElementById('formContainer');
+   const boxContent = document.getElementById('box');
+   const darkCrystalInputs = [];
+   const taniumInputs = [];
+   
+   $(boxContent).hide();
+   
+   $(appendRoll).on('keydown', function(e) {
+     if (e.key === 'Enter') {
+       const numForms = parseInt(appendRoll.value);
+   
+       if (isNaN(numForms) || numForms <= 0) {
+         console.log('Invalid input. Please enter a positive number.');
+         return;
+       }
+   
+       formContainer.innerHTML = '';
+   
+       for (let i = 1; i <= numForms; i++) {
+         const formGroup = document.createElement('div');
+         formGroup.classList.add('row', 'input-group', 'my-3', 'mx-auto');
+   
+         const spanLeft = document.createElement('div');
+         spanLeft.classList.add('col-1', 'input-group-text', 'alert-event');
+         spanLeft.textContent = i;
+   
+         const darkCrystalFormGroup = createFormGroup('darkcystal', 'Dark Crystal');
+         const taniumFormGroup = createFormGroup('tanium', 'Tanium');
+   
+         formGroup.appendChild(spanLeft);
+         formGroup.appendChild(darkCrystalFormGroup);
+         formGroup.appendChild(taniumFormGroup);
+   
+         formContainer.appendChild(formGroup);
+   
+         darkCrystalInputs.push(darkCrystalFormGroup.querySelector('input'));
+         taniumInputs.push(taniumFormGroup.querySelector('input'));
+       }
+     }
+   });
+   
+   function createFormGroup(id, label) {
+     const formGroup = document.createElement('div');
+     formGroup.classList.add('col', 'form-group');
+   
+     const formLabel = document.createElement('label');
+     formLabel.setAttribute('for', id);
+     formLabel.classList.add('form-label');
+     formLabel.textContent = label;
+   
+     const input = document.createElement('input');
+     input.setAttribute('type', 'number');
+     input.setAttribute('min', '0');
+     input.classList.add('form-control');
+     input.setAttribute('id', id);
+     input.setAttribute('value', '0');
+     input.addEventListener('input', calculateTotals);
+   
+     formGroup.appendChild(formLabel);
+     formGroup.appendChild(input);
+   
+     return formGroup;
+   }
+   
+   function calculateTotals() {
+     let darkCrystalTotal = 0;
+     let taniumTotal = 0;
+   
+     darkCrystalInputs.forEach(input => {
+       darkCrystalTotal += parseInt(input.value);
+     });
+   
+     taniumInputs.forEach(input => {
+       taniumTotal += parseInt(input.value);
+     });
+   
+     if (darkCrystalInputs.every(input => input.value !== '0') &&
+       taniumInputs.every(input => input.value !== '0')) {
+       console.log('Dark Crystal Total:', darkCrystalTotal);
+       console.log('Tanium Total:', taniumTotal);
+       $(boxContent).fadeIn();
+     }
+   }
+   
+   function CalculateSum() {
+     const userDC = document.getElementById('DC');
+     const userTN = document.getElementById('TN');
+     const darkCrystalTotal = darkCrystalInputs.reduce((total, input) => total + parseInt(input.value), 0);
+     const taniumTotal = taniumInputs.reduce((total, input) => total + parseInt(input.value), 0);
+     const sumDC = darkCrystalTotal - parseInt(userDC.value);
+     const sumTN = taniumTotal - parseInt(userTN.value);
+   
+     console.log(`Dark Crystal Required: ${sumDC}`);
+     console.log(`Tanium Required: ${sumTN}`);
+
+     Swal.fire({
+            icon: 'success',
+            title: 'Summary',
+            html: `<div class="box text-start">
+                    <label for="require_roll">ต้องหา Dark Crystal เพิ่มอีก</label>
+                    <div class="mt-2 mx-0 alert alert-success id="require_roll"">
+                         <strong>${sumDC}</strong>
+                    </div>
+                    <label for="require_rn">ต้องหา Tanium เพิ่มอีก</label>
+                    <div class="mt-2 mx-0 alert alert-success" id="require_rn">
+                         <strong>${sumTN}</strong> 
+                    </div>
+                    <label for="user_info">User Information</label>
+                    <div class="mt-2 mx-0 alert alert-primary" id="user_info">
+                    <p class="m-0"><strong>Dark Crystal</strong> ทั้งหมดของคุณ: <strong>${userDC.value}</strong></p>
+                    <p class="m-0"><strong>Tanium</strong> ทั้งหมดของคุณ: <strong>${userTN.value}</strong></p>
+                    <hr>
+                    <p class="m-0"><strong>Dark Crystal</strong> ที่ต้องการทั้งหมด: <strong>${darkCrystalTotal}</strong></p>
+                    <p class="m-0"><strong>Tanium</strong> ที่ต้องการทั้งหมด: <strong>${taniumTotal}</strong></p>
+                    </div>
+                  </div>`
+     });
+}
+
+const btnClear = document.getElementById('btn-clear');;
+
+btnClear.addEventListener('click', () => {
+    Swal.fire({
+        position: 'top-center',
+        icon: 'success',
+        title: 'ล้างข้อมูลเสร็จสิ้น',
+        showConfirmButton: false,
+        timer: 1500
+    })
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
+})
+   </script>
+   

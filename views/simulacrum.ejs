@@ -1,0 +1,173 @@
+<div class="container mt-3">
+   <div class="row justify-content-center mx-2 mx-lg-0">
+        <div class="col-12 col-lg-8">
+            <div class="form-group mb-3">
+                <label for="name" class="form-label">Simulacrum</label>
+                <input type="text" id="name" class="form-control" name="name" placeholder="กรอกชื่อ Simulacrum">
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="rn" class="form-label">Red Nucleus</label>
+                <input type="number" id="rn" class="form-control" name="rn" placeholder="กรอกจำนวน Red Nucleus">
+            </div>
+
+            <div class="form-group mb-3">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <label for="dc" class="form-label">Dark Crystal</label>
+                        <input type="number" id="dc" class="form-control" name="dc" min="0" placeholder="กรอกจำนวน Dark Crystal">
+                    </div>
+                    <div class="col-lg-6 mt-3 mt-lg-0">
+                        <label for="tn" class="form-label">Tanium</label>
+                        <input type="number" id="tn" class="form-control" name="tn" min="0" placeholder="กรอกจำนวน Tanium">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <label for="roll" class="form-label">How many times has Gacha been used?</label>
+                        <input type="number" id="roll" class="form-control" min="0" max="79" placeholder="กดไปแล้วกี่ครั้ง (0-79)" name="roll" value="0">
+                    </div>
+                    <div class="col-lg-6 mt-3 mt-lg-0">
+                        <label for="star" class="form-label">How many star?</label>
+                        <input type="number" id="star" class="form-control" min="0" max="6" placeholder="อยากได้จำนวนกี่ดาว (0-6)" name="star" value="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-lg-8">
+                    <button class="btn-calculate float-start w-100" id="btn-calculate">Calculate</button>
+                </div>
+                <div class="col-lg-4 mt-3 mt-lg-0">
+                    <button class="btn-clear float-end w-100" id="btn-clear">Clear <i class="fas fa-arrow-rotate-right"></i></button>
+                </div>
+            </div>
+        </div>
+   </div>
+</div>
+<script>
+    const btnCalculate = document.getElementById('btn-calculate');
+//input 
+const name = document.getElementById('name');
+const redNucleus = document.getElementById('rn');
+const darkCrystal = document.getElementById('dc');
+const tanium = document.getElementById('tn');
+const roll = document.getElementById('roll');
+const star = document.getElementById('star');
+
+//append
+const title = document.getElementById('simulacrum-name');
+const sum_rn = document.getElementById('rn-sum');
+const sum_dc = document.getElementById('dc-sum');
+const sum_tn = document.getElementById('tn-sum');
+const sum_roll = document.getElementById('roll-sum');
+const sum_more_rn = document.getElementById('more-rn-sum');
+
+
+btnCalculate.addEventListener('click', () => {
+    //total nucleus you can get
+    let dcConvert = Math.floor(parseInt(darkCrystal.value) / 150);
+    let tnConvert = Math.floor(parseInt(tanium.value) / 150);
+    let dnPlustn = (Math.floor(parseInt(darkCrystal.value)) + Math.floor(parseInt(tanium.value)))/150;
+    dnPlustn = Math.floor(dnPlustn);
+
+    let totalRN = parseInt(redNucleus.value) + dnPlustn;
+
+    totalRN = totalRN.toFixed(0);
+ 
+    //Balance 
+    let starValue = parseInt(star.value);
+    let rollValue = parseInt(roll.value);
+    
+    //total roll of star = star * 80
+    let totalRoll;
+    let require_roll;
+    let require_red;
+
+    if (starValue == 0) {
+        totalRoll = 80;
+        require_roll = totalRoll - rollValue;
+        require_red = require_roll - totalRN;
+    } else if (starValue > 0 && starValue <= 6) {
+        totalRoll = starValue * 80;
+        require_roll = totalRoll - rollValue;
+        require_red = require_roll - totalRN;
+    }
+    totalRoll = totalRoll.toFixed(0);
+
+    if( redNucleus.value == "" ){
+        Swal.fire({
+            icon: 'error',
+            title: 'Red Nucleus ยังไม่มีข้อมูล',
+            text: 'กรุณากรอก Red Nucleus ของคุณ',
+        });
+    }else if( darkCrystal.value == "" ){
+        Swal.fire({
+            icon: 'error',
+            title: 'Dark Crystal ยังไม่มีข้อมูล',
+            text: 'กรุณากรอก Dark Crystal ของคุณ',
+        });
+        console.log(darkCrystal);
+    }else if( tanium.value == "" ){
+        Swal.fire({
+            icon: 'error',
+            title: 'Tanium ยังไม่มีข้อมูล',
+            text: 'กรุณากรอก Tanium ของคุณ',
+        });
+    }else if( roll.value == "" ){
+        Swal.fire({
+            icon: 'error',
+            title: 'Roll ยังไม่มีข้อมูล',
+            text: 'กรุณากรอก Roll ของคุณ',
+        });
+    }else if( star.value == "" ){
+        Swal.fire({
+            icon: 'error',
+            title: 'Star ยังไม่มีข้อมูล',
+            text: 'กรุณากรอก Star ของคุณ',
+        });
+    }else{
+        Swal.fire({
+            icon: 'success',
+            title: name.value + " Simulacrum",
+            html: `<div class="box text-start">
+                        <label for="require_roll">ต้องกด Gacha อีก</label>
+                        <div class="mt-2 mx-0 alert alert-success id="require_roll"">
+                            <strong>${require_roll} (ครั้ง) </strong><strong>จาก ${totalRoll} ครั้ง</strong>
+                        </div>
+                        <label for="require_rn">ต้องหา Red Nucleus เพิ่มอีก</label>
+                        <div class="mt-2 mx-0 alert alert-success" id="require_rn">
+                            <strong>${require_red}</strong> 
+                        </div>
+                        <label for="user_info">User Information</label>
+                        <div class="mt-2 mx-0 alert alert-primary" id="user_info">
+                            <p class="m-0"><strong>Red Nucleus</strong> ทั้งหมดของคุณ: <strong>${totalRN}</strong></p>
+                            <p class="m-0"><strong>Dark Crystal</strong> ทั้งหมดของคุณ: <strong>${darkCrystal.value}</strong> (${dnPlustn} Red Nucleus)</p>
+                            <p class="m-0"><strong>Tanium</strong> ทั้งหมดของคุณ: <strong>${tanium.value}</strong> (${dnPlustn} Red Nucleus)</p>
+                        </div>
+                    </div>`
+        });
+    }
+});
+
+const btnClear = document.getElementById('btn-clear');;
+
+btnClear.addEventListener('click', () => {
+    Swal.fire({
+        position: 'top-center',
+        icon: 'success',
+        title: 'ล้างข้อมูลเสร็จสิ้น',
+        showConfirmButton: false,
+        timer: 1500
+    })
+    name.value = "";
+    redNucleus.value = "";
+    darkCrystal.value = "";
+    tanium.value = "";
+    roll.value = 0;
+    star.value = 0;
+})
+</script>

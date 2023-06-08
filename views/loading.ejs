@@ -1,0 +1,75 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 loading-container">
+            <div class="loader w-100"></div>
+        </div>
+    </div>
+</div>
+
+  
+<style>
+body {
+    background-color: #3f3f3f;
+}
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.loader {
+    width: 56px;
+    height: 56px;
+    display: grid;
+    border: 4.5px solid #0000;
+    border-radius: 50%;
+    border-color: #dbdcef #0000;
+    animation: spinner-e04l1k 1s infinite linear;
+}
+
+.loader::before,
+.loader::after {
+    content: "";
+    grid-area: 1/1;
+    margin: 2.2px;
+    border: inherit;
+    border-radius: 50%;
+}
+
+.loader::before {
+    border-color: #474bff #0000;
+    animation: inherit;
+    animation-duration: 0.5s;
+    animation-direction: reverse;
+}
+
+.loader::after {
+  margin: 8.9px;
+}
+
+@keyframes spinner-e04l1k {
+  100% {
+    transform: rotate(1turn);
+  }
+}
+</style>
+  
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+    if( id == 1 ){
+        setTimeout(function() {
+            window.location.href = '/simulacrum';
+        }, 1500);
+    }else if( id == 2 ){
+        setTimeout(function() {
+            window.location.href = '/event';
+        }, 1500);
+    }else if( id == 3 ){
+        setTimeout(function() {
+            window.location.href = '/';
+        }, 1500);
+    }
+</script>
+  
