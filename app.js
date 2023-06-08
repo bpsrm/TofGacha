@@ -24,7 +24,7 @@ app.get('/loading', (req, res) => {
     res.render('loading');
 });
 
-const port = process.env.port || 3000;
+const port = process.env.port || 80;
 app.listen(port, () => {
     console.log(`listening on port: ${port}`);
 });
